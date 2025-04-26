@@ -37,8 +37,13 @@ def simplify_address(address):
         # 按位置排序，找最前面的字
         split_indices.sort()
         index, char = split_indices[0]
-        short_address = address[ :index]  # 包含那個字
-        rest_address = address[index: ]   # 後面剩下的
+        
+        if char == '號':
+            short_address = address[:index + 1]  # 不包含「號」
+            rest_address = address[index + 1:]
+        else:
+            short_address = address[:index ]  # 包含那個字
+            rest_address = address[index:]   # 後面剩下的
     else:
         short_address = address
         rest_address = ''
@@ -64,27 +69,10 @@ def remove_ling_with_condition(full_address):
         # 不是高上里 → 刪掉「三位數字+鄰」
         return re.sub(r'\d{3}鄰', '', full_address)
 
-def autofit_columns(file_path):
-    wb = load_workbook(file_path)
-    ws = wb.active
 
-    for column in ws.columns:
-        max_length = 0
-        column_letter = column[0].column_letter  # 取得欄位代號（A, B, C...）
-        for cell in column:
-            try:
-                if cell.value:
-                    max_length = max(max_length, len(str(cell.value)))
-            except:
-                pass
-        adjusted_width = (max_length + 2)  # 留一點緩衝空間
-        ws.column_dimensions[column_letter].width = adjusted_width
-
-    wb.save(file_path)
-    wb.close()
 
 if __name__ == '__main__':
-    file_path = 'input.xlsx'
+    file_path = 'address_data.xlsx'
 
     df = pd.read_excel(file_path)
     addresses = df['查詢地址'].tolist()
@@ -114,5 +102,4 @@ if __name__ == '__main__':
     df['完整地址'] = full_addresses
     df['不含鄰的地址'] = simplified_addresses
     df.to_excel(file_path, index=False)
-    autofit_columns(file_path)  # << 這行新增！
     print(f"已完成，請查看 {file_path}")
