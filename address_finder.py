@@ -1,11 +1,21 @@
 import re
-import time
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from openpyxl import load_workbook
+from selenium.webdriver.chrome.options import Options
+
+
+def setup_chrome_driver():
+    options = Options()
+    options.add_argument('--headless=new')  # 使用新版 headless 模式（更穩定）
+    options.add_argument('--disable-gpu')   # Windows上有時必須加
+    options.add_argument('--no-sandbox')    # 如果你在 Linux 或 Docker 中沒權限時加
+    options.add_argument('--window-size=1920,1080')  # 確保元素能正確呈現
+
+    driver = webdriver.Chrome(options=options)
+    return driver
 
 def search_address(driver, wait, address):
     driver.get('https://addressrs.moi.gov.tw/address/index.cfm?city_id=68000')
@@ -76,7 +86,7 @@ if __name__ == '__main__':
 
     df = pd.read_excel(file_path)
     addresses = df['查詢地址'].tolist()
-    driver = webdriver.Chrome()
+    driver = setup_chrome_driver()
     wait = WebDriverWait(driver, 10)
 
     full_addresses = []

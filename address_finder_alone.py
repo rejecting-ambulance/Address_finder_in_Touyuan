@@ -28,7 +28,7 @@ def search_address(driver, wait, address):
 
 if __name__ == '__main__':
 
-    address = '中壢區中正路76號'
+    address = '桃園市中壢區中正路82號5樓'
 
     driver = webdriver.Chrome()
     driver.get('https://addressrs.moi.gov.tw/address/index.cfm?city_id=68000')
